@@ -7,7 +7,7 @@ var con = mysql.createConnection({
 	//database: "cs4400_team_35"*/
 	host: "127.0.0.1",
 	user: "root",
-	password: "root",
+	password: "",
 	database: "testdb"
 
 });

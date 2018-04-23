@@ -114,22 +114,55 @@ $(function() {
 					if(result) {
 						$("#detail-area").append("<tr><td>Crops: ");
 						$.each(result, function(index, element){
-							if(element.Itemtype == "CROP") {
+							if(element.Itemtype == "VEGITABLE" || element.Itemtype == "FRUIT" ||element.Itemtype == "NUT" || element.Itemtype == "FLOWER") {
 								$("#detail-area").append(element.ItemName +", ");
 							}
 						});
-						$("#detail-area").append("</tr></td><tr><td>Animals: ");
+						$("#detail-area").append("</td></tr><tr><td>Animals: ");
 						$.each(result, function(index, element){
 							if(element.Itemtype == "ANIMAL") {
 								$("#detail-area").append(element.ItemName +", ");
 							}
 						});
-						$("#detail-area").append("</tr></td>");
+						$("#detail-area").append("</td></tr>");
 					}
 				});
+
+				sql = "SELECT Rating from VISIT WHERE PROPID='" + propid +"' AND username='" + username+"'";
+
+				query(sql, function(result) {
+					if(result) {
+						if(result.length  == 0) {
+							$("#detail-area").append(
+								"<tr>" +
+									"<td>" + 
+										"<div class='form-group'>" +
+											"<label for='rating'>Rate Visit</label>" +
+											"<select class='form-control' id='rating'>" +
+												"<option>1 Star</option>" +
+												"<option>2 Star</option>" +
+												"<option>3 Star</option>" +
+												"<option>4 Star</option>" +
+												"<option>5 Star</option>" +
+											"</select>" +
+										"</div>" +
+										"<a href='#' class='btn btn-primary' id='logvisit'>Log Visit</a>" +
+									"</td>" +
+								"</tr>"
+							);
+						} else {
+							$("#detail-area").append(
+								"<tr><td>Your Rating: " + result[0].Rating + "</td></tr>"
+							);
+						}
+					}
+				});
+
+				$('#detail-area').append("</tbody>" +
+						"</table>" +
+					"</div>");
 			}
 		});
-
 	});
 
 });

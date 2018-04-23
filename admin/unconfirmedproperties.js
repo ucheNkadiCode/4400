@@ -21,7 +21,8 @@ $(function() {
 
 	if(username) {
 		//query database and get all 
-		var sql = "Select *, (Select Count(*) From VISIT AS V Where P.PropID = V.PropID) AS Visits, (Select AVG(VI.Rating) From VISIT AS VI Where P.PropID = VI.PropID) AS AvgRating From PROPERTY AS P Where ApprovedBy IS NOT NULL";
+		var sql = "Select *, (Select Count(*) From VISIT AS V Where P.PropID = V.PropID) AS Visits, (Select AVG(VI.Rating) From VISIT AS VI Where P.PropID = VI.PropID) AS AvgRating "
+		+ "From PROPERTY AS P Where ApprovedBy IS NULL";
 		
 		query(sql,function(result){
 				//alert(JSON.stringify(result));
@@ -57,12 +58,6 @@ $(function() {
 									"</td>" +
 									"<td class='propid'>" +
 										row.PROPID +
-									"</td>" +
-									"<td>" + 
-										row.Visits + 
-									"</td>" +
-									"<td>" + 
-										row.AvgRating +
 									"</td>" +
 								"</tr>"
 				 				);
@@ -113,22 +108,97 @@ $(function() {
 					if(result) {
 						$("#detail-area").append("<tr><td>Crops: ");
 						$.each(result, function(index, element){
-							if(element.Itemtype == "CROP") {
+							if(element.Itemtype == "VEGITABLE" || element.Itemtype == "FRUIT" ||element.Itemtype == "NUT" || element.Itemtype == "FLOWER") {
 								$("#detail-area").append(element.ItemName +", ");
 							}
 						});
-						$("#detail-area").append("</tr></td><tr><td>Animals: ");
+						$("#detail-area").append("</td></tr><tr><td>Animals: ");
 						$.each(result, function(index, element){
 							if(element.Itemtype == "ANIMAL") {
 								$("#detail-area").append(element.ItemName +", ");
 							}
 						});
-						$("#detail-area").append("</tr></td>");
+						$("#detail-area").append("</td></tr>");
 					}
 				});
+
+				$('#detail-area').append("</tbody>" +
+						"</table>" +
+					"</div>");
 			}
 		});
+	});
 
+	$("#searchbtn").click(function() {
+		if(username) {
+		//query database and get all 
+
+			var searchterm = $('#search').val();
+
+			if(searchterm) {
+				var searchtype = $("#searchDrop").val();
+
+				if(searchtype == "Name") {
+					sql = "Select *, (Select Count(*) From VISIT AS V Where P.PropID = V.PropID) AS Visits, (Select AVG(VI.Rating) From VISIT AS VI Where P.PropID = VI.PropID) AS AvgRating From PROPERTY AS P Where PropName LIKE '%"+ searchterm +"%' AND ApprovedBy IS NULL";
+				} else if(searchtype == "City") {
+					sql = "Select *, (Select Count(*) From VISIT AS V Where P.PropID = V.PropID) AS Visits, (Select AVG(VI.Rating) From VISIT AS VI Where P.PropID = VI.PropID) AS AvgRating From PROPERTY AS P Where CITY='"+ searchterm +"' AND ApprovedBy IS NULL";
+
+				} else {
+					sql = "Select *, (Select Count(*) From VISIT AS V Where P.PropID = V.PropID) AS Visits, (Select AVG(VI.Rating) From VISIT AS VI Where P.PropID = VI.PropID) AS AvgRating From PROPERTY AS P Where PROPTYPE='"+ searchterm +"' AND ApprovedBy IS NULL";
+
+				}
+
+				query(sql,function(result){
+				//alert(JSON.stringify(result));
+					if(result.length == 0) {
+ 				 		alert("No Properties");
+				 	} else {
+				 		$('#table-body').html("");
+				 		$.each(result, function(index, row) {
+				 			$('#table-body').append(
+				 				"<tr class='table-result'>" +
+									"<td>" +
+										row.PROPNAME +
+									"</td>" + 
+									"<td>" +
+										row.STADDRESS +
+									"</td>" +
+									"<td>" +
+										row.CITY +
+									"</td>" +
+									"<td>" +
+										row.ZIP +
+									"</td>" + 
+									"<td>" +
+										row.SIZEACRES + 
+									"</td>" +
+									"<td>" +
+										row.PROPTYPE + 
+									"</td>" +
+									"<td>" +
+										row.ISPUBLIC.data +
+									"</td>" + 
+									"<td>" +
+										row.ISCOMMERCIAL.data +
+									"</td>" +
+									"<td class='propid'>" +
+										row.PROPID +
+									"</td>" +
+									"<td>" + 
+										row.Visits + 
+									"</td>" +
+									"<td>" + 
+										row.AvgRating +
+									"</td>" +
+								"</tr>"
+				 				);
+				 		});
+				 		
+					}
+			});
+
+			}
+		}
 	});
 
 });
